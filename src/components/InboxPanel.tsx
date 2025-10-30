@@ -80,12 +80,13 @@ export default function InboxPanel({ onSelectEmail }: InboxPanelProps) {
   }
 
   return (
-    <div style={{ position: 'relative', width: 'calc(100% + 8px)', height: '70vh', marginLeft: '10px', marginTop: '-60px', padding: 0, background: '#2a2a2a' }}>
+    <div style={{ position: 'relative', width: '100%', height: '100%', padding: 0, background: '#2a2a2a' }}>
       <Image
         src="/Inbox.png"
         alt="Inbox"
-        fill
-        style={{ objectFit: 'contain', objectPosition: '80% 20%' }}
+        width={900}
+        height={600}
+        style={{ width: '900px', height: '600px', objectFit: 'none', objectPosition: '0 0' }}
       />
       {emailSubjects.map((email) => (
         <button
