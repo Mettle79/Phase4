@@ -1,22 +1,25 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import { Clue } from '@/lib/clueUtils';
 import Modal from '@/components/Modal';
 import ClueTray from '@/components/ClueTray';
 import CalendarPanel from '@/components/CalendarPanel';
+import ResponsiveImageWithHotspots from '@/components/ResponsiveImageWithHotspots';
 
 interface Hotspot {
   id: string;
   name: string;
-  x: number; // percentage
-  y: number; // percentage
+  x: number; // pixels
+  y: number; // pixels
 }
 
 const hotspots: Hotspot[] = [
-  { id: 'calendar', name: 'Calendar', x: 33, y: 79 },
+  { id: 'calendar', name: 'Calendar', x: 633, y: 853 }, // 33% of 1920 = 633, 79% of 1080 = 853
 ];
+
+const IMAGE_WIDTH = 1920;
+const IMAGE_HEIGHT = 1080;
 
 export default function Home() {
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -65,30 +68,14 @@ export default function Home() {
     <main className="main-container">
       <div className="game-area">
         <div className="background-container">
-          <Image
+          <ResponsiveImageWithHotspots
             src={officeImageUrl}
             alt="Office background"
-            fill
-            style={{ objectFit: 'cover' }}
-            priority
+            width={IMAGE_WIDTH}
+            height={IMAGE_HEIGHT}
+            hotspots={hotspots}
+            onHotspotClick={handleHotspotClick}
           />
-          {hotspots.map((hotspot) => (
-            <button
-              key={hotspot.id}
-              className="hotspot"
-              style={{
-                left: `${hotspot.x}%`,
-                top: `${hotspot.y}%`,
-                transform: 'translate(-50%, -50%)',
-              }}
-              onClick={() => handleHotspotClick(hotspot.id)}
-              aria-label={`Hotspot: ${hotspot.name}`}
-            >
-              <span className="hotspot-pulse" />
-              <span className="hotspot-dot" />
-              <span className="hotspot-arrow" />
-            </button>
-          ))}
         </div>
 
         <div className="sidebar">

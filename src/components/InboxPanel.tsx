@@ -3,16 +3,27 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import '../app/intro.css';
+import ResponsiveImageWithHotspots from './ResponsiveImageWithHotspots';
 
 interface InboxPanelProps {
   onSelectEmail: (emailId: string) => void;
 }
 
+const INBOX_WIDTH = 900;
+const INBOX_HEIGHT = 600;
+
 const emailSubjects = [
-  { id: 'email1', subject: 'Winnner Winner!', x: 35, y: 47 },
-  { id: 'email2', subject: 'Action Required: Verify Your Account', x: 35, y: 60 },
-  { id: 'email3', subject: 'Invoice #12345 - Payment Due', x: 35, y: 72 },
+  { id: 'email1', subject: 'Winnner Winner!', x: 35, y: 47 },  // percentages
+  { id: 'email2', subject: 'Final Interview', x: 35, y: 60 },
+  { id: 'email3', subject: 'Order Confirmation', x: 35, y: 70 },
 ];
+
+const inboxHotspots = emailSubjects.map(email => ({
+  id: email.id,
+  x: (email.x / 100) * INBOX_WIDTH,  // Convert percentage to pixels
+  y: (email.y / 100) * INBOX_HEIGHT,
+  name: email.subject,
+}));
 
 export default function InboxPanel({ onSelectEmail }: InboxPanelProps) {
   const [selectedEmail, setSelectedEmail] = useState<string | null>(null);
@@ -80,61 +91,16 @@ export default function InboxPanel({ onSelectEmail }: InboxPanelProps) {
   }
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', padding: 0, background: '#2a2a2a' }}>
-      <Image
+    <div style={{ padding: 0, background: '#2a2a2a' }}>
+      <ResponsiveImageWithHotspots
         src="/Inbox.png"
         alt="Inbox"
-        width={900}
-        height={600}
-        style={{ width: '900px', height: '600px', objectFit: 'none', objectPosition: '0 0' }}
+        width={INBOX_WIDTH}
+        height={INBOX_HEIGHT}
+        hotspots={inboxHotspots}
+        onHotspotClick={handleEmailClick}
+        showArrow={false}
       />
-      {emailSubjects.map((email) => (
-        <button
-          key={email.id}
-          style={{
-            position: 'absolute',
-            left: `${email.x}%`,
-            top: `${email.y}%`,
-            transform: 'translate(-50%, -50%)',
-            width: '40px',
-            height: '40px',
-            border: 'none',
-            background: 'transparent',
-            cursor: 'pointer'
-          }}
-          onClick={() => handleEmailClick(email.id)}
-          aria-label={`Select ${email.subject}`}
-        >
-          <span 
-            className="hotspot-pulse"
-            style={{
-              position: 'absolute',
-              width: '40px',
-              height: '40px',
-              background: 'rgba(0, 255, 0, 0.3)',
-              borderRadius: '50%',
-              left: '50%',
-              top: '50%',
-              transform: 'translate(-50%, -50%)'
-            }}
-          />
-          <span
-            className="hotspot-pulse"
-            style={{
-              position: 'absolute',
-              width: '12px',
-              height: '12px',
-              background: '#00ff00',
-              border: '2px solid white',
-              borderRadius: '50%',
-              left: '50%',
-              top: '50%',
-              transform: 'translate(-50%, -50%)',
-              boxShadow: '0 0 10px rgba(0, 255, 0, 0.5)'
-            }}
-          />
-        </button>
-      ))}
     </div>
   );
 }
