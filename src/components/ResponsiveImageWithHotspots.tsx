@@ -37,7 +37,7 @@ export default function ResponsiveImageWithHotspots({
         preserveAspectRatio="xMidYMid meet"
       >
         {/* Background image */}
-        <image href={src} width={width} height={height} pointer-events="none" />
+        <image href={src} width={width} height={height} pointerEvents="none" />
         
         {/* Hotspots */}
         {hotspots.map((hotspot) => (
