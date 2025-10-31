@@ -8,9 +8,22 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  size?: 'default' | 'large' | 'fullscreen';
 }
 
-export default function Modal({ isOpen, onClose, children }: ModalProps) {
+export default function Modal({ isOpen, onClose, children, size = 'default' }: ModalProps) {
+  const getModalSize = () => {
+    switch (size) {
+      case 'large':
+        return { width: '1400px', height: '900px' };
+      case 'fullscreen':
+        return { width: '95vw', height: '95vh' };
+      default:
+        return { width: '900px', height: '600px' };
+    }
+  };
+
+  const modalSize = getModalSize();
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -44,10 +57,16 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
           />
           <motion.div
             className="modal-container"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.9, x: '-50%', y: '-50%' }}
+            animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }}
+            exit={{ opacity: 0, scale: 0.9, x: '-50%', y: '-50%' }}
             transition={{ type: 'spring', duration: 0.3 }}
+            style={{
+              width: modalSize.width,
+              height: modalSize.height,
+              top: '70%',
+              left: '50%',
+            }}
           >
             <button
               className="modal-close"

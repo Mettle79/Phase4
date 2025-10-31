@@ -12,5 +12,11 @@
 
 .hotspot-pulse {
   animation: pulse 3s infinite;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  pointer-events: none;
+  touch-action: none;
 }
 

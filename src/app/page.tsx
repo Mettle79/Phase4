@@ -6,11 +6,13 @@ import Link from 'next/link';
 import './intro.css';
 
 const TASK1_STORAGE_KEY = 'task1_email_results';
+const TASK2_COMPLETE_KEY = 'task2_complete';
 
 export default function Home() {
   const [videoEnded, setVideoEnded] = useState(false);
   const [imageVisible, setImageVisible] = useState(false);
   const [task1Completed, setTask1Completed] = useState(false);
+  const [task2Completed, setTask2Completed] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Check if Task 1 is completed (all 3 emails completed)
@@ -30,21 +32,38 @@ export default function Home() {
     }
   }, []);
 
-  // Listen for storage changes to update Task 1 completion status
+  // Check if Task 2 is completed
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem(TASK2_COMPLETE_KEY);
+        setTask2Completed(stored === 'true');
+      } catch (error) {
+        console.error('Error checking Task 2 completion:', error);
+      }
+    }
+  }, []);
+
+  // Listen for storage changes to update Task 1 and Task 2 completion status
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const handleStorageChange = () => {
         try {
-          const stored = localStorage.getItem(TASK1_STORAGE_KEY);
-          if (stored) {
-            const parsed = JSON.parse(stored);
+          // Check Task 1
+          const stored1 = localStorage.getItem(TASK1_STORAGE_KEY);
+          if (stored1) {
+            const parsed = JSON.parse(stored1);
             const completedEmails = Object.keys(parsed);
             setTask1Completed(completedEmails.length === 3);
           } else {
             setTask1Completed(false);
           }
+          
+          // Check Task 2
+          const stored2 = localStorage.getItem(TASK2_COMPLETE_KEY);
+          setTask2Completed(stored2 === 'true');
         } catch (error) {
-          console.error('Error checking Task 1 completion:', error);
+          console.error('Error checking task completion:', error);
         }
       };
 
@@ -87,109 +106,188 @@ export default function Home() {
         />
       ) : null}
       {(imageVisible || videoEnded) && (
-        <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
+        <div style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
+          {/* Background image */}
           <Image
             src="/Bedroom.png"
             alt="Bedroom"
             fill
-            style={{ objectFit: 'cover', opacity: imageVisible && !videoEnded ? 0 : 1, transition: 'opacity 0.5s ease-in-out' }}
+            style={{ 
+              objectFit: 'cover', 
+              objectPosition: 'center',
+              width: '100%',
+              height: '100%',
+              opacity: imageVisible && !videoEnded ? 0 : 1, 
+              transition: 'opacity 0.5s ease-in-out' 
+            }}
             priority
           />
-          <Link href="/task1">
-            <button
-              style={{
-                position: 'absolute',
-                left: '63%',
-                top: '49%',
-                transform: 'translate(-50%, -50%)',
-                width: '40px',
-                height: '40px',
-                border: 'none',
-                background: 'transparent',
-                cursor: 'pointer'
-              }}
-              aria-label="Go to Task 1"
+          {/* Use SVG overlay like Task 1 for responsive hotspots */}
+          <div style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}>
+            <svg
+              viewBox="0 0 1920 1080"
+              preserveAspectRatio="xMidYMid slice"
+              style={{ width: '100%', height: '100%', display: 'block' }}
             >
-              <span 
-                className="hotspot-pulse"
-                style={{
-                  position: 'absolute',
-                  width: '40px',
-                  height: '40px',
-                  background: 'rgba(0, 255, 0, 0.3)',
-                  borderRadius: '50%',
-                  left: '50%',
-                  top: '50%',
-                  transform: 'translate(-50%, -50%)'
-                }}
-              />
-              <span
-                className="hotspot-pulse"
-                style={{
-                  position: 'absolute',
-                  width: '12px',
-                  height: '12px',
-                  background: '#00ff00',
-                  border: '2px solid white',
-                  borderRadius: '50%',
-                  left: '50%',
-                  top: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  boxShadow: '0 0 10px rgba(0, 255, 0, 0.5)'
-                }}
-              />
-            </button>
-          </Link>
-          
-          {/* Task 2 Hotspot - only shows when Task 1 is completed */}
-          {task1Completed && (
-            <Link href="/task2">
-              <button
-                style={{
-                  position: 'absolute',
-                  left: '80%',
-                  top: '66%',
-                  transform: 'translate(-50%, -50%)',
-                  width: '40px',
-                  height: '40px',
-                  border: 'none',
-                  background: 'transparent',
-                  cursor: 'pointer'
-                }}
-                aria-label="Go to Task 2"
-              >
-                <span 
-                  className="hotspot-pulse"
-                  style={{
-                    position: 'absolute',
-                    width: '40px',
-                    height: '40px',
-                    background: 'rgba(138, 43, 226, 0.3)', // Purple with transparency
-                    borderRadius: '50%',
-                    left: '50%',
-                    top: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    animation: 'pulse 3s infinite'
+              
+              {/* Task 1 Hotspot - Green */}
+              <g>
+                {/* Pulse circle */}
+                <circle 
+                  cx="1209.6" 
+                  cy="529.2" 
+                  r="20" 
+                  fill="rgba(0, 255, 0, 0.3)"
+                >
+                  <animate
+                    attributeName="opacity"
+                    values="0.3;0;0.3"
+                    dur="3s"
+                    repeatCount="indefinite"
+                  />
+                </circle>
+                {/* Green dot */}
+                <circle
+                  cx="1209.6"
+                  cy="529.2"
+                  r="6"
+                  fill="#00ff00"
+                  stroke="white"
+                  strokeWidth="2"
+                >
+                  <animate
+                    attributeName="opacity"
+                    values="1;0;1"
+                    dur="3s"
+                    repeatCount="indefinite"
+                  />
+                </circle>
+                {/* Clickable area */}
+                <a
+                  href="/task1"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.location.href = '/task1';
                   }}
-                />
-                <span
-                  className="hotspot-pulse"
-                  style={{
-                    position: 'absolute',
-                    width: '12px',
-                    height: '12px',
-                    background: '#8a2be2', // Purple color
-                    border: '2px solid white',
-                    borderRadius: '50%',
-                    left: '50%',
-                    top: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    boxShadow: '0 0 10px rgba(138, 43, 226, 0.5)'
-                  }}
-                />
-              </button>
-            </Link>
-          )}
+                  style={{ pointerEvents: 'auto' }}
+                >
+                  <circle
+                    cx="1209.6"
+                    cy="529.2"
+                    r="40"
+                    fill="transparent"
+                    cursor="pointer"
+                  />
+                </a>
+              </g>
+
+              {/* Task 2 Hotspot - Purple - only shows when Task 1 is completed */}
+              {task1Completed && (
+                <g>
+                  {/* Pulse circle */}
+                  <circle 
+                    cx="1470.8" 
+                    cy="670.6" 
+                    r="20" 
+                    fill="rgba(138, 43, 226, 0.3)"
+                  >
+                    <animate
+                      attributeName="opacity"
+                      values="0.3;0;0.3"
+                      dur="3s"
+                      repeatCount="indefinite"
+                    />
+                  </circle>
+                  {/* Purple dot */}
+                  <circle
+                    cx="1510.8"
+                    cy="690.6"
+                    r="6"
+                    fill="#8a2be2"
+                    stroke="white"
+                    strokeWidth="2"
+                  >
+                    <animate
+                      attributeName="opacity"
+                      values="1;0;1"
+                      dur="3s"
+                      repeatCount="indefinite"
+                    />
+                  </circle>
+                  {/* Clickable area */}
+                  <a
+                    href="/task2"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.location.href = '/task2';
+                    }}
+                    style={{ pointerEvents: 'auto' }}
+                  >
+                    <circle
+                      cx="1410.8"
+                      cy="690.6"
+                      r="40"
+                      fill="transparent"
+                      cursor="pointer"
+                    />
+                  </a>
+                </g>
+              )}
+
+              {/* Task 3 Hotspot - Blue - only shows when Task 2 is completed */}
+              {task2Completed && (
+                <g>
+                  {/* Pulse circle */}
+                  <circle 
+                    cx="1655.2" 
+                    cy="691.2" 
+                    r="20" 
+                    fill="rgba(0, 123, 255, 0.3)"
+                  >
+                    <animate
+                      attributeName="opacity"
+                      values="0.3;0;0.3"
+                      dur="3s"
+                      repeatCount="indefinite"
+                    />
+                  </circle>
+                  {/* Blue dot */}
+                  <circle
+                    cx="1555.2"
+                    cy="665.2"
+                    r="6"
+                    fill="#007bff"
+                    stroke="white"
+                    strokeWidth="2"
+                  >
+                    <animate
+                      attributeName="opacity"
+                      values="1;0;1"
+                      dur="3s"
+                      repeatCount="indefinite"
+                    />
+                  </circle>
+                  {/* Clickable area */}
+                  <a
+                    href="/task3"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.location.href = '/task3';
+                    }}
+                    style={{ pointerEvents: 'auto' }}
+                  >
+                    <circle
+                      cx="1555.2"
+                      cy="691.2"
+                      r="40"
+                      fill="transparent"
+                      cursor="pointer"
+                    />
+                  </a>
+                </g>
+              )}
+            </svg>
+          </div>
         </div>
       )}
     </div>
