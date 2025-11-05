@@ -36,7 +36,7 @@ export default function ClickableMessage({ message, clickedFlags, onRedFlagClick
         return { ...flag, index, actualText, length: searchLength };
       }
       return null;
-    }).filter(flag => flag !== null) as Array<typeof RED_FLAGS[0] & { index: number; actualText: string; length: number }>;
+    }).filter(flag => flag !== null) as Array<typeof redFlags[0] & { index: number; actualText: string; length: number }>;
     
     flagPositions.sort((a, b) => a.index - b.index);
 
